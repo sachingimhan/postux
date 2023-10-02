@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const storeSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    storeId: { type: String },
+    storeId: { type: String, unique:true },
     address: { type: String, required: true, unique: true },
     taxNo: { type: String, default: null },
     registrationNumber: { type: String, default: null },

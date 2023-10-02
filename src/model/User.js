@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
     blocked: { type: Boolean, default: false },
     verified: { type: Boolean, default: false },
     userRole: { type: String, enum: ["owner", "user"], default: "owner" },
-    subRole: { type: String, enum: ["admin", "employee"], default: "admin" }
+    subRole: { type: String, enum: ["admin", "employee"], default: "admin" },
+    mobileNo:{ type:String }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 userSchema.index({

@@ -27,5 +27,10 @@ const GenUuid = ()=>{
     return uuid4().replace(/-/g,'');
 }
 
+const randomId = (length) => {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
+
 exports.EmailValidater = EmailValidater;
 exports.GenUuid = GenUuid;
+exports.randomId = randomId;
