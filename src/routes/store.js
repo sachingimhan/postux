@@ -18,18 +18,18 @@ router.post('/', (req, res, next) => {
         name: data.name,
         address: data.address,
         registrationNumber: data.registrationNumber,
-        taxNo: data.taxNom,
+        taxNo: data.taxNo,
         owner: user._id,
         storeId: randomId(5),
         users: []
     });
-    store.save((err) => {
-        if (err) {
+    store.save()
+        .then((result) => {
+            return res.send({ statusCode: '00', message: 'Store created successfully.', data: result });
+        })
+        .catch((err) => {
             return res.status(400).send({ statusCode: '05', message: 'can not create a store' });
-        } else {
-            return res.send({ statusCode: '00', message: 'Store created successfully.', data: store });
-        }
-    });
+        });
 });
 
 router.get('/all', (req, res, next) => {
@@ -39,6 +39,7 @@ router.get('/all', (req, res, next) => {
         return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
     }
     Model.Store.find({ owner: user._id })
+        .populate('storeOwner')
         .exec()
         .then((result) => {
             if (!result) {
@@ -59,18 +60,83 @@ router.get('/:storeId', (req, res, next) => {
     if (user.userRole != "owner") {
         return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
     }
-    Model.Store.findOne({ _id:storeId, owner:user._id })
-    .exec()
-    .then((result)=>{
-        if (!result) {
-            return res.status(400).send({ statusCode: '01', message: 'Store not found' })
-        } else {
-            return res.send({ statusCode: '00', message: 'Store Data found', data: result });
-        }
-    })
-    .catch((err)=>{
-        return res.status(400).send({ statusCode: '05', message: 'Store data fetch error.' });
-    })
+    Model.Store.findOne({ _id: storeId, owner: user._id })
+        .populate('storeOwner')
+        .exec()
+        .then((result) => {
+            if (!result) {
+                return res.status(400).send({ statusCode: '01', message: 'Store not found' })
+            } else {
+                return res.send({ statusCode: '00', message: 'Store Data found', data: result });
+            }
+        })
+        .catch((err) => {
+            return res.status(400).send({ statusCode: '05', message: 'Store data fetch error.' });
+        })
 });
+
+router.put('/:storeId', (req, res, next) => {
+    let user = req.user;
+    let data = req.body;
+    let storeId = req.params.storeId;
+
+    if (user.userRole != "owner") {
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
+    }
+
+    Model.Store.findOne({ _id: storeId, owner: user._id })
+        .exec()
+        .then((result) => {
+
+            if (!result) {
+                return res.status(400).send({ statusCode: '01', message: 'Store not found' })
+            }
+            result.name = data.name ? data.name : result.name;
+            result.address = data.address ? data.address : result.address;
+            result.taxNo = data.taxNo ? data.taxNo : result.taxNo;
+            result.registrationNumber = data.registrationNumber ? data.registrationNumber : result.registrationNumber;
+            result.status = typeof data.status == 'boolean' ? data.status : result.status;
+            result.save()
+                .then((s) => {
+                    return res.send({ statusCode: '00', message: 'Store Data updated', data: s });
+                })
+                .catch((err) => {
+                    return res.status(400).send({ statusCode: '05', message: 'Store data update error' });
+                })
+        })
+        .catch((err) => {
+            return res.status(400).send({ statusCode: '05', message: 'Store data fetch error' });
+        })
+})
+
+router.put('/addusers/:storeId', (req, res, next) => {
+    let user = req.user;
+    let data = req.body;
+    let storeId = req.params.storeId;
+
+    if (user.userRole != "owner") {
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
+    }
+
+    Model.Store.findOne({ _id: storeId, owner: user._id })
+        .exec()
+        .then((result) => {
+
+            if (!result) {
+                return res.status(400).send({ statusCode: '01', message: 'Store not found' })
+            }
+            result.users = typeof data.users == 'object' ? data.users : result.users;
+            result.save()
+                .then((s) => {
+                    return res.send({ statusCode: '00', message: 'Store Data updated', data: s });
+                })
+                .catch((err) => {
+                    return res.status(400).send({ statusCode: '05', message: 'Store data update error' });
+                })
+        })
+        .catch((err) => {
+            return res.status(400).send({ statusCode: '05', message: 'Store data fetch error' });
+        })
+})
 
 module.exports = router;

@@ -15,14 +15,14 @@ storeSchema.index({
     "storeId": "text"
 });
 
-storeSchema.virtual("StoreOwner", {
+storeSchema.virtual("storeOwner", {
     ref: 'User',
     localField: 'owner',
     foreignField: '_id',
     justOne: true
 });
 
-storeSchema.virtual("StoreUsers", {
+storeSchema.virtual("storeUsers", {
     ref: 'User',
     localField: "users",
     foreignField: '_id'
