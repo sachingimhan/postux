@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
 
+const hook = require('../hooks/databaseHook');
+
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -11,7 +13,9 @@ const userSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     userRole: { type: String, enum: ["owner", "user"], default: "owner" },
     subRole: { type: String, enum: ["admin", "employee"], default: "admin" },
-    mobileNo:{ type:String }
+    mobileNo:{ type:String },
+    store:{ type: mongoose.Schema.Types.ObjectId, ref:'Store' },
+    owner:{ type: mongoose.Schema.Types.ObjectId, ref:'User' }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 userSchema.index({
@@ -51,5 +55,21 @@ userSchema.methods.genToken = function () {
         });
     })
 }
+
+userSchema.virtual('ownerOfUser',{
+    ref:'User',
+    foreignField:'_id',
+    localField:'owner',
+    justOne:true
+});
+
+userSchema.virtual('storeOfUser',{
+    ref:'Store',
+    foreignField:'_id',
+    localField:'store',
+    justOne:true
+});
+
+userSchema.pre('save',hook.updateOwnerId());
 
 module.exports = mongoose.model("User", userSchema);

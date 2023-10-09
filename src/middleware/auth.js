@@ -3,10 +3,10 @@ const jsonwebtoken = require('jsonwebtoken');
 const Model = require('../model');
 
 const checkAuth = (req, res, next) => {
-    let nonSecureApi = ['/login','/register','/store'];
+    let nonSecureApi = ['/login', '/register'];
     let token = req.headers['authorization'];
-    
-    if(nonSecureApi.indexOf(req.path) >= 0){
+
+    if (nonSecureApi.indexOf(req.path) >= 0) {
         return next();
     }
     if (!token || token.length == 0) {
@@ -23,6 +23,8 @@ const checkAuth = (req, res, next) => {
             return res.status(401).send({ statusCode: '401', message: 'Unauthorized Access' })
         } else {
             Model.User.findOne({ email: data.email, uniqueId: data.id })
+                .populate('ownerOfUser')
+                .populate('storeOfUser')
                 .exec()
                 .then((user) => {
                     req.user = user;

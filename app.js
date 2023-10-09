@@ -9,8 +9,9 @@ var cors = require('cors');
 const { checkAuth } = require('./src/middleware/auth');
 
 var indexRouter = require('./src/routes/index');
-var usersRouter = require('./src/routes/users');
+var usersRouter = require('./src/routes/user');
 var storeRouter = require('./src/routes/store');
+var productRouter = require('./src/routes/product');
 
 var app = express();
 
@@ -24,10 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname,'uploads')));
 
 app.use('/', indexRouter);
 app.use('/users', checkAuth, usersRouter);
 app.use('/store', checkAuth, storeRouter);
+app.use('/product',checkAuth, productRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

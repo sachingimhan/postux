@@ -32,11 +32,11 @@ router.post('/', (req, res, next) => {
         });
 });
 
-router.get('/all', (req, res, next) => {
+router.get('/', (req, res, next) => {
     let user = req.user;
 
     if (user.userRole != "owner") {
-        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to fetch store(s)' });
     }
     Model.Store.find({ owner: user._id })
         .populate('storeOwner')
@@ -58,7 +58,7 @@ router.get('/:storeId', (req, res, next) => {
     let storeId = req.params.storeId;
 
     if (user.userRole != "owner") {
-        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to fetch store(s)' });
     }
     Model.Store.findOne({ _id: storeId, owner: user._id })
         .populate('storeOwner')
@@ -81,7 +81,7 @@ router.put('/:storeId', (req, res, next) => {
     let storeId = req.params.storeId;
 
     if (user.userRole != "owner") {
-        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to create a store' });
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to update store' });
     }
 
     Model.Store.findOne({ _id: storeId, owner: user._id })
