@@ -118,6 +118,7 @@ router.get('/:productId', (req, res, next) => {
 
     Model.Product.findOne({ _id: productId, owner: user.ownerOfUser._id, store: user.storeOfUser._id })
         .populate('productStore')
+        .populate('prodCategory')
         .exec()
         .then((result) => {
             if (!result) {
