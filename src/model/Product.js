@@ -38,4 +38,11 @@ productSchema.virtual('productStore',{
     justOne:true
 });
 
+productSchema.virtual('prodCategory',{
+    ref:'Category',
+    foreignField:'_id',
+    localField:'category',
+    justOne:true
+});
+
 module.exports = mongoose.model("Product", productSchema);

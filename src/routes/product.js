@@ -50,6 +50,7 @@ router.get('/', (req, res, next) => {
     let from = (page - 1) * limit;
     Model.Product.find({ owner: user.ownerOfUser._id, store: user.storeOfUser._id })
         .populate('productStore')
+        .populate('prodCategory')
         .skip(from)
         .limit(limit)
         .exec()
@@ -78,6 +79,7 @@ router.put('/:productId', (req, res, next) => {
     }
 
     Model.Product.findOne({ _id: productId })
+        .populate('prodCategory')
         .exec()
         .then((result) => {
             if (!result) {

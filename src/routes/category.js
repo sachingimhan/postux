@@ -65,4 +65,35 @@ router.get('/',(req, res, next)=>{
 
 });
 
+router.get('/:catId',(req, res, next)=>{
+    let user = req.user;
+    let owner = user._id;
+    let catId = req.params.catId;
+    
+    let cond = {
+        owner:owner,
+        _id: catId
+    };
+
+    if(user.userRole != "owner"){
+        cond.owner = user.ownerOfUser._id;
+        cond.store = user.storeOfUser._id;
+    }
+
+    Model.Category.find(cond)
+    .populate('catProducts')
+    .exec()
+    .then((result)=>{
+        if(!result){
+            return res.status(400).send({ statusCode: '04', message: 'Category not found.' })
+        }else{
+            return res.send({ statusCode: '00', message: 'Category found', data: result });
+        }
+    })
+    .catch((err)=>{
+        console.log(err);
+        return res.status(400).send({ statusCode: '01', message: 'Category fetch error' });
+    });
+});
+
 module.exports = router;
