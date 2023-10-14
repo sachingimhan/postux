@@ -21,4 +21,11 @@ categorySchema.virtual("catProducts",{
     foreignField:'_id'
 });
 
+categorySchema.virtual('catStore',{
+    ref:'Store',
+    localField:'store',
+    foreignField:'_id',
+    justOne:true
+});
+
 module.exports = mongoose.model("Category", categorySchema);

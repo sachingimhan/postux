@@ -50,6 +50,7 @@ router.get('/',(req, res, next)=>{
     }
 
     Model.Category.find(cond)
+    .populate('catStore')
     .exec()
     .then((result)=>{
         if(!result){
