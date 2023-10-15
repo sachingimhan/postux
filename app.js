@@ -13,6 +13,7 @@ var usersRouter = require('./src/routes/user');
 var storeRouter = require('./src/routes/store');
 var productRouter = require('./src/routes/product');
 var categoryRouter = require('./src/routes/category');
+var customerRouter = require('./src/routes/customer');
 
 var app = express();
 
@@ -21,7 +22,7 @@ app.set('views', path.join(__dirname, './src/views'));
 app.set('view engine', 'ejs');
 
 app.use(cors());
-app.use(logger('dev'));
+app.use(logger('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -33,6 +34,7 @@ app.use('/users', checkAuth, usersRouter);
 app.use('/store', checkAuth, storeRouter);
 app.use('/product',checkAuth, productRouter);
 app.use('/category',checkAuth, categoryRouter);
+app.use('/customer',checkAuth, customerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -103,8 +103,64 @@ router.get('/', (req, res, next) => {
             }
         })
         .catch((err) => {
+            console.error(err);
             return res.status(400).send({ statusCode: '05', message: 'User data fetch error.' });
         })
+});
+
+router.get('/all', (req, res, next) => {
+    let user = req.user;
+
+    if (user.userRole != "owner") {
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to update store' });
+    }
+
+    Model.User.find({ owner: user._id })
+        .populate("storeOfUser")
+        .exec()
+        .then((result) => {
+            if (!result) {
+                return res.status(400).send({ statusCode: '01', message: 'Users not found' })
+            } else {
+                return res.send({ statusCode: '01', message: 'Users data found', data: result });
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            return res.status(400).send({ statusCode: '05', message: 'User data fetch error.' });
+        })
+});
+
+router.post('/create', (req, res, next) => {
+    let user = req.user;
+    let data = req.body;
+    if (user.userRole != "owner") {
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to update store' });
+    }
+    if (!data.email) {
+        return res.status(400).send({ statusCode: '01', message: 'Invalid Email' });
+    } else if (!Util.EmailValidater(data.email)) {
+        return res.status(400).send({ statusCode: '01', message: 'Invalid Email' });
+    } else if (!data.password) {
+        return res.status(400).send({ statusCode: '01', message: 'Invalid Password' });
+    } else {
+        let user = new Model.User({
+            email: data.email,
+            password: data.password,
+            name: data.name,
+            uniqueId: Util.GenUuid(),
+            mobileNo: data.mobileNo,
+            userRole: "user",
+            subRole: data.subRole
+        });
+        user.save()
+            .then(() => {
+                return res.send({ statusCode: '00', message: 'User registration success' });
+            }).catch((err) => {
+                console.error("Error: ", err);
+                return res.status(400).send({ statusCode: '02', message: 'User already exists' });
+            });
+    }
 });
 
 module.exports = router;
