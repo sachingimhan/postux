@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var cors = require('cors');
+var fs = require('fs');
 
 const { checkAuth } = require('./src/middleware/auth');
 
@@ -15,6 +16,8 @@ var productRouter = require('./src/routes/product');
 var categoryRouter = require('./src/routes/category');
 var customerRouter = require('./src/routes/customer');
 
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+
 var app = express();
 
 // view engine setup
@@ -22,7 +25,7 @@ app.set('views', path.join(__dirname, './src/views'));
 app.set('view engine', 'ejs');
 
 app.use(cors());
-app.use(logger('tiny'));
+app.use(logger('combined', { stream: accessLogStream }));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
