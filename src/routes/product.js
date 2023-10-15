@@ -48,7 +48,15 @@ router.get('/', (req, res, next) => {
     let page = Number(req.query.page) || 1;
     let limit = Number(req.query.limit) || 10;
     let from = (page - 1) * limit;
-    Model.Product.find({ owner: user.ownerOfUser._id, store: user.storeOfUser._id })
+
+    let cond = { owner: user._id };
+
+    if(user.userRole != "owner"){
+        cond.owner = user.ownerOfUser._id;
+        cond.store = user.storeOfUser._id;
+    }
+
+    Model.Product.find(cond)
         .populate('productStore')
         .populate('prodCategory')
         .skip(from)
