@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var cors = require('cors');
-var fs = require('fs');
 
 const { checkAuth } = require('./src/middleware/auth');
 
@@ -16,8 +15,6 @@ var productRouter = require('./src/routes/product');
 var categoryRouter = require('./src/routes/category');
 var customerRouter = require('./src/routes/customer');
 
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-
 var app = express();
 
 // view engine setup
@@ -25,7 +22,7 @@ app.set('views', path.join(__dirname, './src/views'));
 app.set('view engine', 'ejs');
 
 app.use(cors());
-app.use(logger('combined', { stream: accessLogStream }));
+app.use(logger(':method :url :status :res[content-length] - :response-time ms :date[iso]'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -49,10 +46,10 @@ app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+    console.error(err.message)
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.send({ err: err.message });
 });
 
 mongoose.connect(process.env.DB_URL, {minPoolSize: 5, maxPoolSize: 10})

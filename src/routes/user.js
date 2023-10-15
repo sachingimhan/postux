@@ -54,31 +54,36 @@ router.post('/login', (req, res, next) => {
             return res.status(400).send({ statusCode: '01', message: 'Invalid email format' });
         } else {
             Model.User.findOne({ email: data.email })
-                .exec().then((user) => {
-                    user.validatePassword(data.password, (err, isMatch) => {
-                        if (err || !isMatch) {
-                            return res.status(400).send({ statusCode: '01', message: 'Invalid Password' });
-                        } else {
-                            user.genToken()
-                                .then((token) => {
-                                    return res.send({
-                                        statusCode: '00', message: 'Login Success', data: {
-                                            authToken: token,
-                                            user: {
-                                                name: user.name,
-                                                email: user.email,
-                                                verified: user.verified,
-                                                userRole: user.userRole,
-                                                subRole: user.subRole
+                .exec()
+                .then((user) => {
+                    if(!user){
+                        return res.status(400).send({ statusCode: '04', message: 'User Not found' });
+                    }else{
+                        user.validatePassword(data.password, (err, isMatch) => {
+                            if (err || !isMatch) {
+                                return res.status(400).send({ statusCode: '01', message: 'Invalid Password' });
+                            } else {
+                                user.genToken()
+                                    .then((token) => {
+                                        return res.send({
+                                            statusCode: '00', message: 'Login Success', data: {
+                                                authToken: token,
+                                                user: {
+                                                    name: user.name,
+                                                    email: user.email,
+                                                    verified: user.verified,
+                                                    userRole: user.userRole,
+                                                    subRole: user.subRole
+                                                }
                                             }
-                                        }
-                                    });
-                                }).catch((err) => {
-                                    console.error(err);
-                                    return res.status(400).send({ statusCode: '01', message: 'Token Gen Fail' });
-                                })
-                        }
-                    });
+                                        });
+                                    }).catch((err) => {
+                                        console.error(err);
+                                        return res.status(400).send({ statusCode: '01', message: 'Token Gen Fail' });
+                                    })
+                            }
+                        });
+                    }
                 })
                 .catch((err) => {
                     console.error("Catch Error: ", err);
