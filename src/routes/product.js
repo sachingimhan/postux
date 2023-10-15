@@ -15,7 +15,7 @@ router.post('/', (req, res, next) => {
     } else if (user.subRole == "employee") {
         return res.status(400).send({ statusCode: '01', message: 'You do not have permission to Add a Product.' });
     }
-
+    
     let product = new Model.Product({
         productName: data.productName,
         description: data.description,
@@ -28,7 +28,7 @@ router.post('/', (req, res, next) => {
         owner: user.ownerOfUser._id,
         productCode: randomId(6),
         productImage: data.productImage,
-        store: user.storeOfUser._id,
+        store: data.store,
         tax: data.tax,
         unit: data.unit
     });
@@ -39,7 +39,7 @@ router.post('/', (req, res, next) => {
         .catch((err) => {
             console.error(err);
             return res.status(400).send({ statusCode: '01', message: 'Product save fail' })
-        })
+        });
 
 });
 

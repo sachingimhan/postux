@@ -49,7 +49,7 @@ app.use(function (err, req, res, next) {
     console.error(err.message)
     // render the error page
     res.status(err.status || 500);
-    res.send({ err: err.message });
+    res.send(err);
 });
 
 mongoose.connect(process.env.DB_URL, {minPoolSize: 5, maxPoolSize: 10})
@@ -57,6 +57,7 @@ mongoose.connect(process.env.DB_URL, {minPoolSize: 5, maxPoolSize: 10})
         console.log("Database Connection Success.");
     }).catch((err) => {
     console.error("Mongoose Error: ", err);
+    process.exit(0);
 });
 
 module.exports = app;
