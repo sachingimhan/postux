@@ -124,7 +124,14 @@ router.get('/:productId', (req, res, next) => {
     let user = req.user;
     let productId = req.params.productId;
 
-    Model.Product.findOne({ _id: productId, owner: user.ownerOfUser._id, store: user.storeOfUser._id })
+    let cond = { owner: user._id };
+
+    if(user.userRole != "owner"){
+        cond.owner = user.ownerOfUser._id;
+        cond.store = user.storeOfUser._id;
+    }
+
+    Model.Product.findOne(cond)
         .populate('productStore')
         .populate('prodCategory')
         .exec()
