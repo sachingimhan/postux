@@ -27,8 +27,12 @@ const checkAuth = (req, res, next) => {
                 .populate('storeOfUser')
                 .exec()
                 .then((user) => {
-                    req.user = user;
-                    return next();
+                    if(!user){
+                        return res.status(401).send({ statusCode: '401', message: 'Unauthorized Access' })
+                    }else{
+                        req.user = user;
+                        next();
+                    }
                 })
                 .catch((err) => {
                     console.error("Auth: ", err);
