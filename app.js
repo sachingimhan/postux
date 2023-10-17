@@ -14,6 +14,7 @@ var storeRouter = require('./src/routes/store');
 var productRouter = require('./src/routes/product');
 var categoryRouter = require('./src/routes/category');
 var customerRouter = require('./src/routes/customer');
+var subUserRouter = require('./src/routes/subuser');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use('/store', checkAuth, storeRouter);
 app.use('/product',checkAuth, productRouter);
 app.use('/category',checkAuth, categoryRouter);
 app.use('/customer',checkAuth, customerRouter);
+app.use('/subuser',checkAuth, subUserRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
