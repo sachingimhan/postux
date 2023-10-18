@@ -17,7 +17,7 @@ router.post('/', (req, res, next) => {
     } else if (!data.password) {
         return res.status(400).send({ statusCode: '01', message: 'Invalid Password' });
     } else {
-        let user = new Model.User({
+        let nuser = new Model.User({
             email: data.email,
             password: data.password,
             name: data.name,
@@ -28,7 +28,7 @@ router.post('/', (req, res, next) => {
             store: data.store,
             owner: user._id
         });
-        user.save()
+        nuser.save()
             .then(() => {
                 return res.send({ statusCode: '00', message: 'User creation success' });
             }).catch((err) => {
