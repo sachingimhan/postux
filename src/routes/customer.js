@@ -102,16 +102,6 @@ router.put('/:custId',(req, res,next)=>{
                 })
             }
         })
-        
-
-        customer.save()
-            .then((result) => {
-                return res.send({ statusCode: '00', message: 'customer addded successfully.', data: result });
-            })
-            .catch((err) => {
-                console.error(err);
-                return res.status(400).send({ statusCode: '05', message: 'can not create a customer' });
-            })
     }
 });
 
