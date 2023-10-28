@@ -38,4 +38,81 @@ router.post('/', (req, res, next) => {
 
 });
 
+router.get('/',(req,res,next)=>{
+    let user = req.user;
+    Model.Customer.find({})
+    .exec()
+    .then((result)=>{
+        if(!result){
+            return res.status(400).send({ statusCode: '01', message: 'Customers not found' });
+        }else{
+            return res.send({ statusCode: '00', message: 'Customers data found', data: result });
+        }
+    }).catch((err)=>{
+        console.error(err);
+        return res.status(400).send({ statusCode: '05', message: 'can not fetch customers' });
+    })
+});
+
+router.get('/:custId',(req,res,next)=>{
+    let user = req.user;
+    let custId = req.params.custId;
+    Model.Customer.findOne({ _id: custId, owner: user.ownerOfUser._id })
+    .populate('regStore')
+    .exec()
+    .then((result)=>{
+        if(!result){
+            return res.status(400).send({ statusCode: '01', message: 'Customers not found' });
+        }else{
+            return res.send({ statusCode: '00', message: 'Customers data found', data: result });
+        }
+    }).catch((err)=>{
+        console.error(err);
+        return res.status(400).send({ statusCode: '05', message: 'can not fetch customers' });
+    })
+});
+
+router.put('/:custId',(req, res,next)=>{
+    let user = req.user;
+    let custId = req.params.custId;
+    let data = req.body;
+
+    if (user.subRole == "employee") {
+        return res.status(400).send({ statusCode: '01', message: 'You do not have permission to Update Customer.' });
+    } else {
+        Model.Customer.findOne({ _id: custId, owner: user.ownerOfUser._id })
+        .exec()
+        .then((result)=>{
+            if(!result){
+                return res.status(400).send({ statusCode: '01', message: 'Customers not found' });
+            }else{
+                result.name = data.name || result.name;
+                result.address = data.address || result.address;
+                result.city = data.city || result.city;
+                result.contact = data.contact || result.contact;
+                result.country = data.country || result.country;
+                result.email = data.email || result.email;
+                result.profileImage = data.profileImage || result.profileImage;
+                result.save()
+                .then((p)=>{
+                    return res.send({ statusCode: '00', message: 'Cusomer Data updated', data: p });
+                }).catch((err)=>{
+                    console.log(err);
+                    return res.status(400).send({ statusCode: '01', message: 'Customer update error' });
+                })
+            }
+        })
+        
+
+        customer.save()
+            .then((result) => {
+                return res.send({ statusCode: '00', message: 'customer addded successfully.', data: result });
+            })
+            .catch((err) => {
+                console.error(err);
+                return res.status(400).send({ statusCode: '05', message: 'can not create a customer' });
+            })
+    }
+});
+
 module.exports = router;

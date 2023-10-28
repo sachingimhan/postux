@@ -20,4 +20,11 @@ customerSchema.index({
     "contact":"text"
 });
 
+customerSchema.virtual('regStore',{
+    ref:"Store",
+    localField:"store",
+    foreignField:"_id",
+    justOne:true
+});
+
 module.exports = mongoose.model("Customer", customerSchema);

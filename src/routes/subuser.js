@@ -69,7 +69,7 @@ router.get('/:userId', (req, res, next) => {
         return res.status(400).send({ statusCode: '01', message: 'You do not have permission please contact Admin' });
     }
 
-    Model.User.find({ _id: userId })
+    Model.User.findOne({ _id: userId })
         .populate("storeOfUser")
         .populate("ownerOfUser")
         .exec()
