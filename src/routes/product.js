@@ -124,7 +124,7 @@ router.get('/:productId', (req, res, next) => {
     let user = req.user;
     let productId = req.params.productId;
 
-    let cond = { owner: user._id };
+    let cond = { owner: user._id, _id: productId };
 
     if(user.userRole != "owner"){
         cond.owner = user.ownerOfUser._id;

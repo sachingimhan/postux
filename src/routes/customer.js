@@ -23,7 +23,7 @@ router.post('/', (req, res, next) => {
             email: data.email,
             profileImage: data.profileImage,
             owner: user.ownerOfUser._id,
-            store: user.storeOfUser._id || data.store
+            store: data.store || user.storeOfUser._id
         });
 
         customer.save()
